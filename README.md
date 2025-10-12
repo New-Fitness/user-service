@@ -9,8 +9,8 @@ Core Service 🚀
 ---
 
 ## 📋 Overview
-**Core Service** — это центральная система аутентификации и управления пользователями, обеспечивающая единый источник достоверных данных о пользователях во всей платформе.  
-Сервис управляет профилями пользователей, поддерживает авторизацию через JWT и взаимодействует с другими микросервисами (питание, тренировки, гейтвей и т.д.).
+**Core Service** — This is a central authentication and user management system, providing a single source of truth for user data across the entire platform.
+The service manages user profiles, supports JWT authentication, and interacts with other microservices (nutrition, training, gateway, etc.).
 
 ---
 
@@ -58,36 +58,10 @@ graph TB
 
 ### Prerequisites
 
-- Java **17+**
+- Java **21+**
     
-- PostgreSQL **12+**
+- PostgreSQL **16+**
     
-- Maven or Gradle
-    
-
-### Run locally
-
-`# Clone repository git clone https://github.com/your-org/core-service.git cd core-service  # Configure database in application.yml spring.datasource.url=jdbc:postgresql://localhost:5432/core_db spring.datasource.username=your_username spring.datasource.password=your_password  # Start application ./mvnw spring-boot:run`
+- Gradle
 
 ---
-
-## 📚 API Endpoints (examples)
-
-|Method|Endpoint|Description|
-|---|---|---|
-|`POST`|`/api/auth/register`|Register new user|
-|`POST`|`/api/auth/login`|Authenticate and get JWT|
-|`GET`|`/api/users/profile`|Get user profile|
-|`PUT`|`/api/users/goals`|Update user goals|
-
----
-
-## 🧩 Future Improvements
-
-- Add **OAuth2 / OpenID Connect** support
-    
-- Implement **audit logging**
-    
-- Integrate **Prometheus + Grafana** for metrics
-    
-- Add **Testcontainers** for integration testing
