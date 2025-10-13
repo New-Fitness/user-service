@@ -27,7 +27,7 @@ jobs:
 
     env:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/fitness_ai
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/user_service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
       JAVA_TOOL_OPTIONS: "-Xmx2g"
@@ -49,10 +49,11 @@ jobs:
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
+          echo "✅ PostgreSQL is ready"
 
       - name: Grant execute permissions for gradlew
         run: chmod +x gradlew
 
-      # 👇 Выполняем полноценную сборку и тестирование в профиле prod
-      - name: Build & Test (with Liquibase)
-        run: ./gradlew clean build --info --stacktrace
+      - name: Build & Test (with Liquibase + jOOQ)
+        run: |
+          ./gradlew clean update generateJooq build --info --stacktrace
