@@ -88,28 +88,16 @@ dependencyManagement {
 // ================================
 
 
-val activeProfile: String = when (val profile = findProperty("spring.profiles.active")) {
-    is String -> profile
-    else -> "local"
-}
+val activeProfile: String = System.getenv("SPRING_PROFILES_ACTIVE") ?: "local"
 
-fun dbUrl(profile: String) = when (profile) {
+
+fun dbUrl(profile: String) = when(profile) {
     "local" -> "jdbc:postgresql://localhost:5433/user_service_local"
-    "prod" -> "jdbc:postgresql://prod-db-host:5432/user_service"
+    "prod" -> "jdbc:postgresql://localhost:5432/user_service"
     else -> throw IllegalArgumentException("Unknown profile: $profile")
 }
-
-fun dbUser(profile: String) = when (profile) {
-    "local" -> "local_user"
-    "prod" -> "prod_user"
-    else -> throw IllegalArgumentException("Unknown profile: $profile")
-}
-
-fun dbPassword(profile: String) = when (profile) {
-    "local" -> "local_password"
-    "prod" -> "prod_password"
-    else -> throw IllegalArgumentException("Unknown profile: $profile")
-}
+fun dbUser(profile: String) = if(profile=="local") "local_user" else "postgres"
+fun dbPassword(profile: String) = if(profile=="local") "local_password" else "password"
 
 
 // ================================
