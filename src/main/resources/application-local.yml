@@ -13,4 +13,5 @@ server:
 
 logging:
   level:
-    root: DEBUG
+    root: INFO
+    org.springframework.ai: DEBUG
