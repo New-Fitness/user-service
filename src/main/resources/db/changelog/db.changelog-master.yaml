@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-create-extensions.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/002-create-user-statuses.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/003-create-genders.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/004-create-users.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/005-create-roles.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/006-create-permissions.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/007-create-user-profiles.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/008-create-user-roles.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/009-create-user-preferences.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/010-create-refresh-tokens.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/011-create-password-reset-tokens.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changes/012-create-indexes.sql
+      relativeToChangelogFile: true
