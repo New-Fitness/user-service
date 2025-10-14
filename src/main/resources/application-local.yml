@@ -5,6 +5,19 @@ spring:
     password: local_password
     driver-class-name: org.postgresql.Driver
 
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5433/user_service_local
+    username: local_user
+    password: local_password
+
+    pool:
+      initial-size: 10          # Сколько соединений создать сразу
+      max-size: 50              # Максимум активных соединений
+      max-idle-time: 30s        # Закрывать idle соединения
+      validation-query: SELECT 1
+      acquire-retry: 3          # Попытки взять соединение из пула
+      max-create-connection-time: 5s
+
   liquibase:
     enabled: true
 
@@ -14,3 +27,4 @@ server:
 logging:
   level:
     root: DEBUG
+    io.r2dbc.pool: TRACE
