@@ -25,12 +25,17 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
-    env:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/user_service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      JAVA_TOOL_OPTIONS: "-Xmx2g"
+  env:
+    DB_HOST: localhost
+    DB_PORT: 5432
+    DB_NAME: user_service
+    DB: postgresql
+    SPRING_PROFILES_ACTIVE: prod
+    SPRING_DATASOURCE_URL: jdbc:${{env.DB}}://${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.DB_NAME}}
+    SPRING_R2DBC_URL: r2dbc:${{env.DB}}://${{env.DB_HOST}}:${{env.DB_PORT}}/${{env.DB_NAME}}
+    SPRING_DATASOURCE_USERNAME: postgres
+    SPRING_DATASOURCE_PASSWORD: password
+    JAVA_TOOL_OPTIONS: "-Xmx2g"
 
     steps:
       - name: Checkout repository
