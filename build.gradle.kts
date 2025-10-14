@@ -21,60 +21,46 @@ repositories {
     mavenCentral()
 }
 
-
 val postgresVersion = "42.6.0"
 extra["springAiVersion"] = "1.0.3"
 
 dependencies {
-    // =============================================
-    // Spring Boot Starters (основные фреймворки)
-    // =============================================
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")        // JPA + Hibernate
-    implementation("org.springframework.boot:spring-boot-starter-graphql")         // GraphQL API
-    implementation("org.springframework.boot:spring-boot-starter-security")        // Spring Security
-    implementation("org.springframework.boot:spring-boot-starter-webflux")         // Reactive Web
-    implementation("org.springframework.boot:spring-boot-starter-jooq")            // jOOQ SQL Builder
-    implementation("org.springframework.ai:spring-ai-starter-model-ollama")        // AI интеграция с Ollama
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-graphql")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-jooq")
+    implementation("org.springframework.ai:spring-ai-starter-model-ollama")
 
-    // =============================================
-    // Database & Migration (БД и миграции)
-    // =============================================
-    implementation("org.liquibase:liquibase-core")                                 // Миграции БД
-    implementation("org.postgresql:postgresql:$postgresVersion")                         // PostgreSQL драйвер
+    // DB & Liquibase
+    implementation("org.liquibase:liquibase-core")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 
-    // =============================================
-    // jOOQ Explicit Dependencies (ФИКС для ошибки key_seq)
-    // =============================================
-    implementation("org.jooq:jooq:3.19.17")                                        // Явно указываем версию jOOQ
-    jooqGenerator("org.jooq:jooq-meta:3.19.17")                                    // Метаданные для генерации
-    jooqGenerator("org.jooq:jooq-codegen:3.19.17")                                 // Генератор кода jOOQ
-    jooqGenerator("org.postgresql:postgresql:$postgresVersion")                             // PostgreSQL для генерации jOOQ
+    // jOOQ
+    implementation("org.jooq:jooq:3.19.17")
+    jooqGenerator("org.jooq:jooq-meta:3.19.17")
+    jooqGenerator("org.jooq:jooq-codegen:3.19.17")
+    jooqGenerator("org.postgresql:postgresql:$postgresVersion")
 
-    // =============================================
-    // Liquibase Runtime (для Gradle тасок liquibase)
-    // =============================================
-    liquibaseRuntime("org.liquibase:liquibase-core:4.28.0")                        // Ядро Liquibase
-    liquibaseRuntime("org.postgresql:postgresql:$postgresVersion")                         // PostgreSQL для Liquibase
-    liquibaseRuntime("info.picocli:picocli:4.7.6")                                 // CLI парсер для Liquibase
+    // Liquibase runtime
+    liquibaseRuntime("org.liquibase:liquibase-core:4.28.0")
+    liquibaseRuntime("org.postgresql:postgresql:$postgresVersion")
+    liquibaseRuntime("info.picocli:picocli:4.7.6")
     liquibaseRuntime(sourceSets.named("main").get().output)
 
+    // Lombok / devtools
+    compileOnly("org.projectlombok:lombok")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.projectlombok:lombok")
 
-    // =============================================
-    // Development & Annotation Processing
-    // =============================================
-    compileOnly("org.projectlombok:lombok")                                        // Генерация кода Lombok
-    developmentOnly("org.springframework.boot:spring-boot-devtools")               // Hot reload для разработки
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor") // Обработка @ConfigurationProperties
-    annotationProcessor("org.projectlombok:lombok")                                // Обработка аннотаций Lombok
-
-    // =============================================
-    // Test Dependencies (тестирование)
-    // =============================================
-    testImplementation("org.springframework.boot:spring-boot-starter-test")        // Spring Boot тесты
-    testImplementation("io.projectreactor:reactor-test")                           // Reactive streams тестирование
-    testImplementation("org.springframework.graphql:spring-graphql-test")          // GraphQL тестирование
-    testImplementation("org.springframework.security:spring-security-test")        // Security тестирование
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")                  // Запуск JUnit тестов
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.springframework.graphql:spring-graphql-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 dependencyManagement {
@@ -83,43 +69,35 @@ dependencyManagement {
     }
 }
 
-// ================================
-// 1. DB Creds по профилям (Spring Profiles)
-// ================================
+// ----------------------------
+// Profiles
+// ----------------------------
+val activeProfile: String = System.getenv("SPRING_PROFILES_ACTIVE") ?: "local"
 
-
-val activeProfile: String = when (val profile = findProperty("spring.profiles.active")) {
-    is String -> profile
-    else -> "local"
-}
-
-fun dbUrl(profile: String) = when (profile) {
+fun dbUrl(profile: String) = when(profile) {
     "local" -> "jdbc:postgresql://localhost:5433/user_service_local"
-    "prod" -> "jdbc:postgresql://prod-db-host:5432/user_service"
-    else -> throw IllegalArgumentException("Unknown profile: $profile")
+    "prod" -> System.getenv("SPRING_DATASOURCE_URL")
+    else -> throw IllegalArgumentException("DB URL not configured for profile: $profile")
 }
-
-fun dbUser(profile: String) = when (profile) {
+fun dbUser(profile: String) = when(profile){
     "local" -> "local_user"
-    "prod" -> "prod_user"
-    else -> throw IllegalArgumentException("Unknown profile: $profile")
+    "prod" -> System.getenv("SPRING_DATASOURCE_USERNAME")
+    else -> throw IllegalArgumentException("DB user not configured for profile: $profile")
 }
-
-fun dbPassword(profile: String) = when (profile) {
+fun dbPassword(profile: String) = when(profile){
     "local" -> "local_password"
-    "prod" -> "prod_password"
-    else -> throw IllegalArgumentException("Unknown profile: $profile")
+    "prod" -> System.getenv("SPRING_DATASOURCE_PASSWORD")
+    else -> throw IllegalArgumentException("DB password not configured for profile: $profile")
 }
 
-
-// ================================
-// 2. Liquibase конфигурация
-// ================================
+// ----------------------------
+// Liquibase config
+// ----------------------------
 liquibase {
     activities.create("main") {
-        this.arguments = mapOf(
+        arguments = mapOf(
             "changelogFile" to "src/main/resources/db/changelog/db.changelog-master.yaml",
-            "url" to dbUrl(activeProfile),  // ← РЕАЛЬНАЯ БД!
+            "url" to dbUrl(activeProfile),
             "username" to dbUser(activeProfile),
             "password" to dbPassword(activeProfile),
             "driver" to "org.postgresql.Driver"
@@ -128,9 +106,9 @@ liquibase {
     runList = "main"
 }
 
-// ================================
-// 3. jOOQ генерация
-// ================================
+// ----------------------------
+// jOOQ config
+// ----------------------------
 jooq {
     configurations {
         create("main") {
@@ -146,7 +124,6 @@ jooq {
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
                         inputSchema = "public"
-                        // ИСКЛЮЧАЕМ системные таблицы Liquibase (опционально)
                         excludes = "databasechangelog|databasechangeloglock"
                     }
                     generate.apply {
@@ -164,17 +141,18 @@ jooq {
     }
 }
 
-
-
 tasks.named("generateJooq") {
     dependsOn("update")
 }
 
+// ----------------------------
+// Test config
+// ----------------------------
 tasks.withType<Test> { useJUnitPlatform() }
 
-// ================================
-// 4. Docker (только локально)
-// ================================
+// ----------------------------
+// Local Docker tasks
+// ----------------------------
 if (activeProfile == "local") {
     tasks.register<Exec>("dockerUp") {
         group = "docker"
@@ -195,32 +173,31 @@ if (activeProfile == "local") {
     }
 }
 
-// ================================
-// 6. Полная сборка и setup
-// ================================
+// ----------------------------
+// Setup / Dev / Migrate
+// ----------------------------
 tasks.register("setup") {
     group = "application"
-    description = "Complete project setup: Docker + SQL + jOOQ + Migrations"
-    dependsOn(if (activeProfile == "local") listOf("dockerUp", "update")
-    else listOf("updateSql", "update"))
+    description = "Complete setup: Docker + Liquibase + jOOQ"
+    dependsOn(if (activeProfile == "local") listOf("dockerUp", "update") else listOf("updateSql", "update"))
     doLast { println("✅ Setup completed! Profile: $activeProfile") }
 }
 
 tasks.register("migrate") {
     group = "application"
-    description = "Update migrations"
+    description = "Run migrations"
     dependsOn("updateSql", "update")
 }
 
 tasks.register("dev") {
     group = "application"
-    description = "Run app smartly (Docker + Jooq + Liquibase)"
+    description = "Run app with migrations + jOOQ"
     dependsOn("setup", "bootRun")
 }
 
-// ================================
-// 7. Git hooks
-// ================================
+// ----------------------------
+// Git hooks
+// ----------------------------
 tasks.register<Copy>("installGitHooks") {
     group = "git"
     description = "Install Git hooks"
