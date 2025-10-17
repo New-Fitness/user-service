@@ -7,6 +7,10 @@ on:
     branches: [ main, master ]
 
 jobs:
+
+  checkstyle:
+    uses: New-Fitness/common/.github/workflows/java-style-check.yml@main
+
   build:
     runs-on: ubuntu-latest
 
