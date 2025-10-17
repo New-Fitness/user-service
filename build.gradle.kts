@@ -72,7 +72,7 @@ dependencyManagement {
 
 checkstyle {
     toolVersion = "10.20.0" // или последняя версия Checkstyle
-    configFile = file(".github/checkstyle/google_checks.xml")
+    configFile = file("config/checkstyle/google_checks.xml")
 }
 
 // ----------------------------
