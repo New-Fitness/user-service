@@ -8,4 +8,4 @@ on:
 
 jobs:
   checkstyle:
-    uses: New-Fitness/.github/.github/workflows/java-style-check.yml@main
+    uses: New-Fitness/.github/workflows/java-style-check.yml@main
