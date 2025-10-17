@@ -2,6 +2,7 @@ import org.liquibase.gradle.LiquibaseTask
 
 plugins {
     java
+    checkstyle
     id("org.springframework.boot") version "3.5.6"
     id("io.spring.dependency-management") version "1.1.7"
     id("nu.studer.jooq") version "8.2"
@@ -67,6 +68,11 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.ai:spring-ai-bom:${property("springAiVersion")}")
     }
+}
+
+checkstyle {
+    toolVersion = "10.20.0"
+    configFile = file(findProperty("checkstyleConfig") ?: "config/checkstyle/google_checks.xml")
 }
 
 // ----------------------------
